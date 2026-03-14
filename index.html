@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Mandi Calculator</title>
+<title>Mandi Market Calculator</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -12,13 +11,13 @@
 
 <body class="bg-gradient-to-r from-blue-100 to-indigo-200 min-h-screen flex items-center justify-center">
 
-<div class="bg-white p-8 rounded-xl shadow-xl w-[650px]">
+<div class="bg-white p-8 rounded-xl shadow-xl w-[700px]">
 
 <h1 class="text-2xl font-bold text-center text-indigo-600 mb-6">
-krishna trading company buyer Calculator
+ KRISHNA TRADING COMAPANY BUYERS CALCULATOR
 </h1>
 
-<!-- number of entries -->
+<!-- Number of Entries -->
 
 <div class="mb-4">
 <label class="font-medium">Number of Entries</label>
@@ -28,15 +27,15 @@ Generate
 </button>
 </div>
 
-<!-- dynamic inputs -->
+<!-- Entries Container -->
 
 <div id="entries" class="space-y-3"></div>
 
 <button onclick="calculate()" class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 mt-4">
-Calculate
+Calculate Totals
 </button>
 
-<!-- results -->
+<!-- Results -->
 
 <div id="resultBox" class="mt-6 hidden">
 
@@ -98,18 +97,40 @@ container.innerHTML=""
 for(let i=0;i<count;i++){
 
 container.innerHTML += `
-<div class="grid grid-cols-3 gap-3">
 
-<input type="number" step="0.01" placeholder="Weight (kg)" class="weight border p-2 rounded">
+<div class="grid grid-cols-4 gap-3 items-center">
 
-<input type="number" step="0.01" placeholder="Rate (per 100kg)" class="rate border p-2 rounded">
+<input type="number" step="0.01" placeholder="Weight (kg)"
+class="weight border p-2 rounded" oninput="updateAmount(this)">
 
-<input type="number" placeholder="Bags" class="bags border p-2 rounded">
+<input type="number" step="0.01" placeholder="Rate (per 100kg)"
+class="rate border p-2 rounded" oninput="updateAmount(this)">
+
+<input type="number" placeholder="Bags"
+class="bags border p-2 rounded">
+
+<div class="amount font-semibold text-green-600">₹ 0</div>
 
 </div>
+
 `
 
 }
+
+}
+
+function updateAmount(element){
+
+let row = element.parentElement
+
+let weight = parseFloat(row.querySelector(".weight").value) || 0
+let rate = parseFloat(row.querySelector(".rate").value) || 0
+
+let ratePerKg = rate / 100
+
+let amount = weight * ratePerKg
+
+row.querySelector(".amount").innerText = "₹ " + amount.toFixed(2)
 
 }
 
@@ -129,7 +150,7 @@ let w = parseFloat(weights[i].value) || 0
 let r = parseFloat(rates[i].value) || 0
 let b = parseFloat(bags[i].value) || 0
 
-let ratePerKg = r/100
+let ratePerKg = r / 100
 
 totalWeight += w
 totalBags += b
