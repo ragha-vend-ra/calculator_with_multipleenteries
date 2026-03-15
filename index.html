@@ -6,7 +6,6 @@
 <title>Mandi Market Calculator</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
 </head>
 
 <body class="bg-gradient-to-r from-blue-100 to-indigo-200 min-h-screen flex items-center justify-center">
@@ -14,10 +13,8 @@
 <div class="bg-white p-8 rounded-xl shadow-xl w-[700px]">
 
 <h1 class="text-2xl font-bold text-center text-indigo-600 mb-6">
- KRISHNA TRADING COMAPANY BUYERS CALCULATOR
+KRISHNA TRADING COMPANY BUYERS CALCULATOR
 </h1>
-
-<!-- Number of Entries -->
 
 <div class="mb-4">
 <label class="font-medium">Number of Entries</label>
@@ -27,15 +24,11 @@ Generate
 </button>
 </div>
 
-<!-- Entries Container -->
-
 <div id="entries" class="space-y-3"></div>
 
 <button onclick="calculate()" class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 mt-4">
 Calculate Totals
 </button>
-
-<!-- Results -->
 
 <div id="resultBox" class="mt-6 hidden">
 
@@ -87,6 +80,29 @@ Calculate Totals
 
 <script>
 
+// truncate (no rounding)
+function truncateTwo(num){
+return Math.floor(num * 100) / 100
+}
+
+// mandi rounding rule
+function roundPaise(num){
+
+let truncated = Math.floor(num * 100) / 100
+let thirdDigit = Math.floor((num * 1000) % 10)
+
+if(thirdDigit >= 5){
+truncated += 0.01
+}
+
+return truncated
+}
+
+// indian currency format
+function formatINR(num){
+return "₹ " + num.toLocaleString("en-IN", {minimumFractionDigits:2, maximumFractionDigits:2})
+}
+
 function createEntries(){
 
 let count = document.getElementById("entryCount").value
@@ -128,9 +144,9 @@ let rate = parseFloat(row.querySelector(".rate").value) || 0
 
 let ratePerKg = rate / 100
 
-let amount = weight * ratePerKg
+let amount = truncateTwo(weight * ratePerKg)
 
-row.querySelector(".amount").innerText = "₹ " + amount.toFixed(2)
+row.querySelector(".amount").innerText = formatINR(amount)
 
 }
 
@@ -155,33 +171,40 @@ let ratePerKg = r / 100
 totalWeight += w
 totalBags += b
 
-amount += w * ratePerKg
+amount += truncateTwo(w * ratePerKg)
 
 }
 
-let commission = amount * 0.02
-let labour = totalBags * 5.5
-let veman = totalBags * 2
-let cess = amount * 0.006
-let association = totalBags * 0.5
-let cgst = amount * 0.025
-let sgst = amount * 0.025
+// amount rule
+amount = truncateTwo(amount)
 
-let totalCharges = commission + labour + veman + cess + association + cgst + sgst
-let totalPayable = amount + totalCharges
+// charges rule
+let commission = roundPaise(amount * 0.02)
+let labour = roundPaise(totalBags * 5.5)
+let veman = roundPaise(totalBags * 2)
+let cess = roundPaise(amount * 0.006)
+let association = roundPaise(totalBags * 0.5)
+let cgst = roundPaise(amount * 0.025)
+let sgst = roundPaise(amount * 0.025)
+
+let totalCharges = roundPaise(
+commission + labour + veman + cess + association + cgst + sgst
+)
+
+let totalPayable = truncateTwo(amount + totalCharges)
 
 document.getElementById("totalWeight").innerText = totalWeight.toFixed(2)+" kg"
 document.getElementById("totalBags").innerText = totalBags
-document.getElementById("amount").innerText = "₹ "+amount.toFixed(2)
-document.getElementById("commission").innerText = "₹ "+commission.toFixed(2)
-document.getElementById("labour").innerText = "₹ "+labour.toFixed(2)
-document.getElementById("veman").innerText = "₹ "+veman.toFixed(2)
-document.getElementById("cess").innerText = "₹ "+cess.toFixed(2)
-document.getElementById("association").innerText = "₹ "+association.toFixed(2)
-document.getElementById("cgst").innerText = "₹ "+cgst.toFixed(2)
-document.getElementById("sgst").innerText = "₹ "+sgst.toFixed(2)
-document.getElementById("totalCharges").innerText = "₹ "+totalCharges.toFixed(2)
-document.getElementById("totalPayable").innerText = "₹ "+totalPayable.toFixed(2)
+document.getElementById("amount").innerText = formatINR(amount)
+document.getElementById("commission").innerText = formatINR(commission)
+document.getElementById("labour").innerText = formatINR(labour)
+document.getElementById("veman").innerText = formatINR(veman)
+document.getElementById("cess").innerText = formatINR(cess)
+document.getElementById("association").innerText = formatINR(association)
+document.getElementById("cgst").innerText = formatINR(cgst)
+document.getElementById("sgst").innerText = formatINR(sgst)
+document.getElementById("totalCharges").innerText = formatINR(totalCharges)
+document.getElementById("totalPayable").innerText = formatINR(totalPayable)
 
 document.getElementById("resultBox").classList.remove("hidden")
 
